@@ -1,0 +1,44 @@
+{
+  "_comment": "Math Modeling Labs Configuration File",
+  "_description": "This file contains configurations for all lab works. Each lab has its own section.",
+  
+  "L1": {
+    "_comment": "Lab 1: Continuous-time Markov Chains",
+    "n_states": 7,
+    "initial_state": 0,
+    "transitions": [
+      {"from": 1, "to": 4, "rate": 0.1},
+      {"from": 1, "to": 5, "rate": 0.15},
+      {"from": 1, "to": 7, "rate": 0.25},
+      {"from": 3, "to": 1, "rate": 0.05},
+      {"from": 3, "to": 6, "rate": 0.15},
+      {"from": 4, "to": 1, "rate": 0.2},
+      {"from": 4, "to": 3, "rate": 0.15},
+      {"from": 5, "to": 1, "rate": 0.3},
+      {"from": 5, "to": 2, "rate": 0.15},
+      {"from": 5, "to": 3, "rate": 0.2},
+      {"from": 5, "to": 4, "rate": 0.15},
+      {"from": 5, "to": 6, "rate": 0.3},
+      {"from": 7, "to": 1, "rate": 0.15},
+      {"from": 7, "to": 4, "rate": 0.25}
+    ]
+  },
+  
+  "L2": {
+    "_comment": "Lab 2: [Placeholder - Not Implemented]",
+    "_description": "Add your Lab 2 configuration here",
+    "enabled": false
+  },
+  
+  "L3": {
+    "_comment": "Lab 3: [Placeholder - Not Implemented]",
+    "_description": "Add your Lab 3 configuration here",
+    "enabled": false
+  },
+  
+  "L4": {
+    "_comment": "Lab 4: [Placeholder - Not Implemented]",
+    "_description": "Add your Lab 4 configuration here",
+    "enabled": false
+  }
+}

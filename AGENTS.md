@@ -1,0 +1,272 @@
+# AGENTS.md — MathModel Project
+
+This document provides essential information for AI coding agents working on this project.
+
+---
+
+## Project Overview
+
+This is a **mathematical modeling educational project** consisting of multiple lab works for a course on modeling technical objects and control systems.
+
+**Current Labs:**
+| Lab | Topic | Status |
+|-----|-------|--------|
+| Lab 1 | Continuous-time Markov Chains | ✅ Implemented |
+| Lab 2 | [Placeholder] | 🚧 Not implemented |
+| Lab 3 | [Placeholder] | 🚧 Not implemented |
+| Lab 4 | [Placeholder] | 🚧 Not implemented |
+
+---
+
+## Technology Stack
+
+| Component | Technology |
+|-----------|------------|
+| Language | Python 3.8+ |
+| Numerical Computing | NumPy |
+| ODE Solver | SciPy (`scipy.integrate.solve_ivp`) |
+| Linear Algebra | SciPy (`scipy.linalg`) |
+| Visualization | Matplotlib |
+| Graph Visualization | NetworkX |
+
+### Dependencies
+
+All dependencies are listed in `requirements.txt`:
+```
+numpy
+scipy
+matplotlib
+networkx
+```
+
+---
+
+## Project Structure
+
+```
+MathModel/
+├── .venv/                    # Virtual environment (created by run_labs.bat)
+├── L1/                       # Lab 1: Markov Chains
+│   ├── markov_solver.py      # Main solver: builds matrix, solves ODEs
+│   ├── markov_graph.py       # Graph visualization
+│   └── stationary_check.py   # Absorption probability analysis
+├── L2/                       # Lab 2: [Placeholder]
+├── L3/                       # Lab 3: [Placeholder]
+├── L4/                       # Lab 4: [Placeholder]
+├── Output/                   # Generated output files (PNG, etc.)
+│   ├── L1_markov_graph.png   # Lab 1 graph output
+│   └── L1_probabilities.png  # Lab 1 probabilities plot
+├── config.json               # Central configuration for all labs
+├── requirements.txt          # Python dependencies
+├── run_labs.bat             # Main launcher with menu
+└── AGENTS.md                # This file
+```
+
+### Configuration File (`config.json`)
+
+Central configuration file in the root directory containing settings for all labs:
+
+```json
+{
+  "L1": {
+    "n_states": 7,
+    "initial_state": 0,
+    "transitions": [...]
+  },
+  "L2": { "enabled": false },
+  "L3": { "enabled": false },
+  "L4": { "enabled": false }
+}
+```
+
+- Each lab has its own section (L1, L2, L3, L4)
+- Placeholder labs have `enabled: false` flag
+- Lab 1 configuration:
+  - `n_states`: Number of states in the Markov chain
+  - `initial_state`: Starting state index (0-based)
+  - `transitions`: List of transitions with `from`, `to`, and `rate` fields
+  - Absorbing states are detected automatically
+
+### Output Directory (`Output/`)
+
+All generated files are saved to the `Output/` directory with lab-specific prefixes:
+- `L1_markov_graph.png` - State transition diagram
+- `L1_probabilities.png` - Probability evolution plot
+- Future labs will use `L2_*`, `L3_*`, `L4_*` prefixes
+
+### Lab 1: Markov Chains (L1/)
+
+#### `markov_solver.py`
+- **Class:** `MarkovChainSolver`
+- **Purpose:** Core computation engine
+- **Key Methods:**
+  - `_load_config()` — Loads L1 config from root config.json
+  - `_build_intensity_matrix()` — Constructs Q matrix from config
+  - `_detect_absorbing_states()` — Detects absorbing states dynamically
+  - `validate_matrix()` — Validates row sums = 0, off-diagonal ≥ 0, diagonal ≤ 0
+  - `kolmogorov_equations()` — Returns dP/dt = P · Q
+  - `solve()` — Numerical integration using RK45 method
+  - `plot_probabilities()` — Generates probability evolution plot (saves to Output/L1_probabilities.png)
+  - `print_differential_equations()` — Outputs LaTeX-ready equations
+
+#### `markov_graph.py`
+- **Function:** `load_config()` — Loads L1 config from root config.json
+- **Function:** `create_markov_graph(config)` — Creates directed graph from config
+- **Function:** `plot_markov_graph(config)` — Generates state diagram (saves to Output/L1_markov_graph.png)
+- **Function:** `detect_absorbing_states(config)` — Detects absorbing states from transitions
+
+#### `stationary_check.py`
+- **Function:** `load_config()` — Loads L1 config from root config.json
+- **Function:** `analyze_absorbing_states(config)` — Computes absorption probabilities
+- **Function:** `build_matrices_from_config(config)` — Builds Q_transient and R matrices
+
+---
+
+## Build and Run Instructions
+
+### Quick Start (Windows)
+
+```batch
+run_labs.bat
+```
+
+The batch script will:
+1. Check for Python 3.8+
+2. Create virtual environment `.venv/` at project root if not exists
+3. Install dependencies from `requirements.txt`
+4. Show menu with available labs
+5. Execute selected lab workflow
+6. Save outputs to `Output/` directory
+
+### Manual Execution
+
+```bash
+# Create and activate virtual environment
+python -m venv .venv
+.venv\Scripts\activate.bat  # Windows
+# or: source .venv/bin/activate  # Linux/Mac
+
+pip install -r requirements.txt
+
+# Run Lab 1
+cd L1
+python markov_graph.py       # Step 1: Generate graph -> Output/L1_markov_graph.png
+python markov_solver.py      # Step 2: Solve ODEs -> Output/L1_probabilities.png
+python stationary_check.py   # Step 3: Analyze absorption probabilities
+```
+
+### Expected Outputs (Lab 1)
+
+| File | Description |
+|------|-------------|
+| `Output/L1_markov_graph.png` | State transition diagram |
+| `Output/L1_probabilities.png` | Probability evolution over time |
+
+---
+
+## Configuration Format
+
+### Root Configuration (`config.json`)
+
+```json
+{
+  "L1": {
+    "n_states": 7,
+    "initial_state": 0,
+    "transitions": [
+      {"from": 1, "to": 4, "rate": 0.1},
+      ...
+    ]
+  },
+  "L2": {
+    "enabled": false,
+    "...": "..."
+  }
+}
+```
+
+- `from` and `to` are 1-based state indices
+- `rate` is the transition intensity λ
+- Absorbing states are detected automatically (no outgoing transitions)
+
+---
+
+## Code Style Guidelines
+
+### Documentation Style
+- **Docstrings:** Google-style docstrings with Args/Returns sections
+- **Comments:** Primarily English
+- **Type hints:** Not used (follows NumPy/SciPy conventions)
+
+### Naming Conventions
+- **Classes:** `PascalCase` (e.g., `MarkovChainSolver`)
+- **Methods/Functions:** `snake_case` (e.g., `validate_matrix`)
+- **Output files:** `L{lab_number}_{description}.png`
+
+### Mathematical Conventions
+- States are **1-indexed in comments and output**, **0-indexed in code**
+- Matrix Q follows standard infinitesimal generator convention:
+  - Off-diagonal Q[i,j] = λᵢⱼ (transition rate from i to j)
+  - Diagonal Q[i,i] = -Σⱼ Q[i,j] (negative sum of outgoing rates)
+
+---
+
+## Testing Strategy
+
+**No formal test suite exists.** Validation is built into the main modules:
+
+### Built-in Validation Checks
+
+1. **Matrix Validation** (`markov_solver.py`):
+   - Row sums must be approximately zero
+   - Off-diagonal elements must be non-negative
+   - Diagonal elements must be non-positive
+
+2. **Solution Verification** (`markov_solver.py`):
+   - Probability conservation check: ΣPᵢ(t) ≈ 1.0 at all times
+
+3. **Absorption Probability Check** (`stationary_check.py`):
+   - Probabilities to absorbing states should sum to 1.0
+
+---
+
+## Development Notes
+
+### Adding a New Lab
+
+To add a new lab (e.g., Lab 2):
+
+1. **Create directory:** `L2/`
+2. **Add configuration section** to `config.json`:
+   ```json
+   "L2": {
+     "enabled": true,
+     "...": "your config here"
+   }
+   ```
+3. **Add Python scripts:** Implement the lab logic in `L2/`
+4. **Update output paths:** Scripts should save to `Output/L2_*`
+5. **Update `run_labs.bat`:** Add menu entry and execution logic
+6. **Update `AGENTS.md`:** Document the new lab
+
+### Modifying Lab Configuration
+
+To adapt Lab 1 for different transition rates or state count:
+
+1. **Edit `config.json`:**
+   - Update `L1.n_states`
+   - Modify `L1.transitions` list
+   - Adjust `L1.initial_state` if needed
+
+2. **Scripts automatically:**
+   - Detect absorbing states from transitions
+   - Build matrices from configuration
+   - Generate outputs to `Output/L1_*.png`
+
+---
+
+## Language Notes
+
+- **Source code comments:** English
+- **User-facing output:** English
+- **Documentation:** English
