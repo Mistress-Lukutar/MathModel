@@ -7,7 +7,7 @@ Mathematical modeling educational project consisting of multiple lab works for a
 | Lab | Topic | Status |
 |-----|-------|--------|
 | Lab 1 | Continuous-time Markov Chains | ✅ Implemented |
-| Lab 2 | [Placeholder] | 🚧 Not implemented |
+| Lab 2 | Operator Method (Laplace Transform) | ✅ Implemented |
 | Lab 3 | [Placeholder] | 🚧 Not implemented |
 | Lab 4 | [Placeholder] | 🚧 Not implemented |
 
@@ -29,7 +29,13 @@ MathModel/
 │   ├── markov_solver.py      # Main solver: builds matrix, solves ODEs
 │   ├── markov_graph.py       # Graph visualization
 │   └── stationary_check.py   # Absorption probability analysis
-├── L2/                       # Lab 2: [Placeholder]
+├── L2/                       # Lab 2: Operator Method
+│   ├── __init__.py           # Package initialization
+│   ├── equation_parser.py    # Parse L1 equations export
+│   ├── operator_solver.py    # Laplace transform solver
+│   ├── comparison.py         # L2 vs L1 comparison
+│   ├── report_generator.py   # Text report generation
+│   └── L2_report.py          # Main entry point
 ├── L3/                       # Lab 3: [Placeholder]
 ├── L4/                       # Lab 4: [Placeholder]
 ├── Output/                   # Generated output files (PNG, etc.)
@@ -89,10 +95,28 @@ Edit `config.json` to customize:
 | `Output/L1_probabilities.png` | Probability evolution plot |
 | `Output/L1_results.txt` | Full calculation report |
 
+## Lab 2: Operator Method
+
+### Features
+
+- Parses differential equations exported from Lab 1
+- Solves algebraic system in p-domain using Laplace transform
+- Performs partial fraction decomposition for inverse transforms
+- Compares analytical (L2) vs numerical (L1) solutions
+- Generates detailed comparison reports with error metrics
+
+### Outputs
+
+| File | Description |
+|------|-------------|
+| `Output/L2_comparison.png` | L1 vs L2 solution comparison plot |
+| `Output/L2_analytical_solution.png` | Analytical solution plot |
+| `Output/L2_comparison_report.txt` | Detailed comparison report |
+
 ## Authors
 
 - **Mistress-Lukutar** - Initial work
 
 ## Version
 
-1.0 (2026-03-16)
+1.1 (2026-03-16)
