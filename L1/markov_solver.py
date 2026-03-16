@@ -9,6 +9,7 @@ Date: 2026-03-16
 
 import json
 import os
+from datetime import datetime
 import numpy as np
 from scipy.integrate import solve_ivp
 import matplotlib.pyplot as plt
@@ -371,6 +372,69 @@ class MarkovChainSolver:
             f.write("\n".join(lines))
         
         print(f"Results saved to {output_file}")
+        
+        # Save numerical solution for L2 comparison
+        solution_file = os.path.join(output_dir, 'L1_solution.npy')
+        np.save(solution_file, {'t': solution.t, 'y': solution.y})
+        print(f"Solution saved for L2: {solution_file}")
+    
+    def export_for_L2(self, output_path=None):
+        """
+        Export equations in format suitable for L2 operator method.
+        
+        Args:
+            output_path (str): Path to save export file. If None, saves to Output/L1_equations.txt
+        """
+        if output_path is None:
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            root_dir = os.path.dirname(script_dir)
+            output_dir = os.path.join(root_dir, 'Output')
+            os.makedirs(output_dir, exist_ok=True)
+            output_path = os.path.join(output_dir, 'L1_equations.txt')
+        
+        lines = [
+            "# L1 Export for L2 - Kolmogorov Equations",
+            f"# Generated: {datetime.now().isoformat()}",
+            f"# States: {self.n_states}",
+            f"# Initial state index: {np.argmax(self.initial_state)}",
+            f"# Absorbing states: {[s + 1 for s in self.absorbing_states]}",
+            ""
+        ]
+        
+        # Add matrix Q
+        lines.append("# Matrix Q (intensity matrix):")
+        for i in range(self.n_states):
+            row = "# " + " ".join([f"{self.Q[i,j]:8.4f}" for j in range(self.n_states)])
+            lines.append(row)
+        lines.append("")
+        
+        # Add equations in parsed format
+        lines.append("# Equations (format: dP_i/dt=...):")
+        for i in range(self.n_states):
+            eq = f"dP_{i+1}/dt="
+            terms = []
+            # Incoming terms (positive)
+            for j in range(self.n_states):
+                if i != j and self.Q[j, i] > 0:
+                    terms.append(f"{self.Q[j,i]:.2f}*P_{j+1}")
+            # Outgoing term (negative)
+            if self.Q[i, i] < 0:
+                terms.append(f"{self.Q[i,i]:.2f}*P_{i+1}")
+            # Absorbing state with no incoming
+            if not terms:
+                terms.append("0.00")
+            eq += "+".join(terms).replace("+-", "-")
+            lines.append(eq)
+        
+        lines.append("")
+        lines.append("# Initial conditions (P_i(0)):")
+        for i in range(self.n_states):
+            lines.append(f"P_{i+1}(0)={self.initial_state[i]:.1f}")
+        
+        with open(output_path, 'w', encoding='utf-8') as f:
+            f.write('\n'.join(lines))
+        
+        print(f"Exported for L2: {output_path}")
     
     def plot_probabilities(self, solution, output_file=None):
         """
@@ -429,6 +493,9 @@ if __name__ == "__main__":
     sol = solver.solve(t_span=(0, 30), t_points=500)
     solver.plot_probabilities(sol)
     solver.save_results(sol)
+    
+    # Export for L2
+    solver.export_for_L2()
     
     print("\nFinal probabilities (t=30):")
     for i, p in enumerate(sol.y[:, -1]):

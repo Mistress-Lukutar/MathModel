@@ -12,7 +12,7 @@ This is a **mathematical modeling educational project** consisting of multiple l
 | Lab | Topic | Status |
 |-----|-------|--------|
 | Lab 1 | Continuous-time Markov Chains | ✅ Implemented |
-| Lab 2 | [Placeholder] | 🚧 Not implemented |
+| Lab 2 | Operator Method (Laplace Transform) | ✅ Implemented |
 | Lab 3 | [Placeholder] | 🚧 Not implemented |
 | Lab 4 | [Placeholder] | 🚧 Not implemented |
 
@@ -50,7 +50,13 @@ MathModel/
 │   ├── markov_solver.py      # Main solver: builds matrix, solves ODEs
 │   ├── markov_graph.py       # Graph visualization
 │   └── stationary_check.py   # Absorption probability analysis
-├── L2/                       # Lab 2: [Placeholder]
+├── L2/                       # Lab 2: Operator Method
+│   ├── __init__.py           # Package initialization
+│   ├── equation_parser.py    # Parse L1 equations export
+│   ├── operator_solver.py    # Laplace transform solver
+│   ├── comparison.py         # L2 vs L1 comparison
+│   ├── report_generator.py   # Text report generation
+│   └── L2_report.py          # Main entry point
 ├── L3/                       # Lab 3: [Placeholder]
 ├── L4/                       # Lab 4: [Placeholder]
 ├── Output/                   # Generated output files (PNG, etc.)
@@ -108,12 +114,49 @@ All generated files are saved to the `Output/` directory with lab-specific prefi
   - `solve()` — Numerical integration using RK45 method
   - `plot_probabilities()` — Generates probability evolution plot (saves to Output/L1_probabilities.png)
   - `print_differential_equations()` — Outputs LaTeX-ready equations
+  - `export_for_L2()` — Exports equations for L2 operator method
+  - `save_results()` — Saves results and L1_solution.npy for L2 comparison
 
 #### `markov_graph.py`
 - **Function:** `load_config()` — Loads L1 config from root config.json
 - **Function:** `create_markov_graph(config)` — Creates directed graph from config
 - **Function:** `plot_markov_graph(config)` — Generates state diagram (saves to Output/L1_markov_graph.png)
 - **Function:** `detect_absorbing_states(config)` — Detects absorbing states from transitions
+
+### Lab 2: Operator Method (L2/)
+
+#### `operator_solver.py`
+- **Class:** `OperatorSolver`
+- **Purpose:** Analytical solution using Laplace transform
+- **Key Methods:**
+  - `_build_operator_system()` — Builds (pI - Q^T) system
+  - `_solve_algebraic()` — Solves algebraic system in p-domain
+  - `_decompose_fractions()` — Partial fraction decomposition
+  - `_inverse_transform()` — Inverse Laplace transform
+  - `evaluate()` — Evaluate solution at time points
+  - `get_steady_state()` — Calculate steady-state probabilities
+
+#### `equation_parser.py`
+- **Class:** `EquationParser`
+- **Purpose:** Parse L1 exported equations
+- **Key Methods:**
+  - `parse()` — Parse L1_equations.txt
+  - `_parse_equations()` — Extract differential equations
+  - `_build_matrix()` — Reconstruct Q matrix
+
+#### `comparison.py`
+- **Class:** `L2L1Comparator`
+- **Purpose:** Compare analytical (L2) vs numerical (L1)
+- **Key Methods:**
+  - `load_L1_solution()` — Load L1_solution.npy
+  - `compare()` — Calculate error metrics
+  - `plot_comparison()` — Generate comparison plots
+
+#### `L2_report.py`
+- **Purpose:** Main entry point for Lab 2
+- **Workflow:** Parse → Solve → Compare → Report
+
+---
 
 #### `stationary_check.py`
 - **Function:** `load_config()` — Loads L1 config from root config.json
@@ -236,16 +279,16 @@ python stationary_check.py   # Step 3: Analyze absorption probabilities
 
 To add a new lab (e.g., Lab 2):
 
-1. **Create directory:** `L2/`
+1. **Create directory:** `L3/`
 2. **Add configuration section** to `config.json`:
    ```json
-   "L2": {
+   "L3": {
      "enabled": true,
      "...": "your config here"
    }
    ```
-3. **Add Python scripts:** Implement the lab logic in `L2/`
-4. **Update output paths:** Scripts should save to `Output/L2_*`
+3. **Add Python scripts:** Implement the lab logic in `L3/`
+4. **Update output paths:** Scripts should save to `Output/L3_*`
 5. **Update `run_labs.bat`:** Add menu entry and execution logic
 6. **Update `AGENTS.md`:** Document the new lab
 

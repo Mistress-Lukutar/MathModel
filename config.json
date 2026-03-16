@@ -25,9 +25,20 @@
   },
   
   "L2": {
-    "_comment": "Lab 2: [Placeholder - Not Implemented]",
-    "_description": "Add your Lab 2 configuration here",
-    "enabled": false
+    "_comment": "Lab 2: Operator Method for ODE Systems",
+    "_description": "Analytical solution using Laplace transform",
+    "enabled": true,
+    "input": {
+      "source": "L1",
+      "equations_file": "Output/L1_equations.txt"
+    },
+    "solver": {
+      "symbolic": true,
+      "simplify": true
+    },
+    "output": {
+      "compare_with_L1": true
+    }
   },
   
   "L3": {

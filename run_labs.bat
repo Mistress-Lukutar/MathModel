@@ -68,7 +68,7 @@ echo  SELECT LAB WORK
 echo ============================================
 echo.
 echo [1] - Lab 1: Continuous-time Markov Chains
-echo [2] - Lab 2: [Placeholder]
+echo [2] - Lab 2: Operator Method (Laplace Transform)
 echo [3] - Lab 3: [Placeholder]
 echo [4] - Lab 4: [Placeholder]
 echo.
@@ -154,11 +154,43 @@ REM === Lab 2: Placeholder ===
 :LAB2
 echo.
 echo ============================================
-echo  LAB 2: [Placeholder]
+echo  LAB 2: Operator Method for ODE Systems
 echo ============================================
 echo.
-echo This lab is not implemented yet.
+
+REM Check if L1 has been run
+set "L1_EXPORT=%~dp0Output\L1_equations.txt"
+if not exist "%L1_EXPORT%" (
+    echo [WARNING] L1 equations file not found!
+    echo Please run Lab 1 first to generate equations.
+    echo.
+    pause
+    goto :MENU
+)
+
+cd /d "%~dp0L2"
+
+echo [Step 1] Parsing equations from L1...
+echo [Step 2] Solving using operator method (Laplace transform)...
+echo [Step 3] Generating analytical solution plots...
+echo [Step 4] Comparing with L1 numerical solution...
+echo [Step 5] Generating report...
 echo.
+
+python L2_report.py
+
+echo.
+echo ============================================
+echo  LAB 2 COMPLETED
+echo ============================================
+echo.
+echo Generated files in Output/:
+echo   [PNG] L2_analytical_solution.png
+echo   [PNG] L2_comparison.png (if L1 solution available)
+echo   [TXT] L2_results.txt
+echo.
+
+cd /d "%~dp0"
 pause
 goto :MENU
 
