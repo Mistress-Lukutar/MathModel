@@ -4,6 +4,32 @@ This document provides essential information for AI coding agents working on thi
 
 ---
 
+## Agent Workspace (`.agents/`)
+
+Directory `.agents/` is designated for agent-related files and is excluded from git tracking:
+
+- **Purpose:** Store plans, temporary files, notes, and draft documents
+- **Status:** Listed in `.gitignore` — never committed to repository
+- **Usage:** 
+  - Place task plans, implementation drafts, research notes here
+  - Store extracted/analyzed data temporarily
+  - Keep work-in-progress documents
+
+**Example contents:**
+```
+.agents/
+├── L2_implementation_plan.md
+├── research_notes.txt
+├── temp_analysis.json
+└── ...
+```
+
+---
+
+## Project Overview
+
+---
+
 ## Project Overview
 
 This is a **mathematical modeling educational project** consisting of multiple lab works for a course on modeling technical objects and control systems.

@@ -26,3 +26,6 @@ Thumbs.db
 # PDF and extracted text (large files)
 *.pdf
 pdf_extracted.txt
+
+# Agents workspace - plans, temporary files, notes
+.agents/
