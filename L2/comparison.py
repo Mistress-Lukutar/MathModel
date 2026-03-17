@@ -142,18 +142,30 @@ class L2L1Comparator:
         y_l2 = self.comparison_results['y_l2']
         n_states = self.solver_l2.n_states
         
-        # Plot 1: All states comparison
+        # Plot: L2 (analytical) with L1 (numerical) as points
         fig, axes = plt.subplots(2, 1, figsize=(12, 10))
         
-        # Top: L2 vs L1 for all states
+        # Top: L2 (solid lines) with L1 (points) overlay
         ax = axes[0]
         colors = plt.cm.tab10(np.linspace(0, 1, n_states))
+        
+        # Plot L2 analytical solutions (solid lines)
         for i in range(n_states):
-            ax.plot(t, y_l2[i, :], '-', color=colors[i], linewidth=2, label=f'P_{i+1} (L2)')
-            ax.plot(t, y_l1[i, :], '--', color=colors[i], linewidth=1, alpha=0.7)
+            ax.plot(t, y_l2[i, :], '-', color=colors[i], linewidth=2, label=f'P_{i+1}(t)')
+        
+        # Plot L1 numerical solutions as small points
+        step = max(1, len(t) // 60)  # Show ~60 points per curve
+        for i in range(n_states):
+            ax.plot(t[::step], y_l1[i, ::step], 'o', color=colors[i], markersize=3, 
+                    markerfacecolor=colors[i], markeredgecolor='black', markeredgewidth=0.5)
+        
+        # Add dummy scatter for legend entry for numerical points
+        ax.plot([], [], 'o', color='gray', markersize=3, markerfacecolor='gray', 
+                markeredgecolor='black', markeredgewidth=0.5, label='L1 numerical (points)')
+        
         ax.set_xlabel('Time (t)', fontsize=12)
         ax.set_ylabel('Probability', fontsize=12)
-        ax.set_title('L2 (Analytical) vs L1 (Numerical) - Solid=L2, Dashed=L1', fontsize=14)
+        ax.set_title('L2 (Analytical - solid lines) vs L1 (Numerical - points)', fontsize=14)
         ax.legend(loc='right', fontsize=9)
         ax.grid(True, alpha=0.3)
         ax.set_xlim(left=0)
@@ -175,35 +187,6 @@ class L2L1Comparator:
         plt.savefig(output_file, dpi=300, bbox_inches='tight')
         plt.close()
         print(f"Saved comparison plot: {output_file}")
-        
-        # Plot 2: Individual state comparisons
-        n_cols = 3
-        n_rows = (n_states + n_cols - 1) // n_cols
-        fig, axes = plt.subplots(n_rows, n_cols, figsize=(15, 4 * n_rows))
-        axes = axes.flatten() if n_states > 1 else [axes]
-        
-        for i in range(n_states):
-            ax = axes[i]
-            ax.plot(t, y_l1[i, :], 'b--', linewidth=2, label='L1 (Numerical)')
-            ax.plot(t, y_l2[i, :], 'r-', linewidth=1.5, alpha=0.7, label='L2 (Analytical)')
-            ax.fill_between(t, y_l1[i, :], y_l2[i, :], alpha=0.2, color='green')
-            ax.set_xlabel('Time (t)', fontsize=10)
-            ax.set_ylabel('Probability', fontsize=10)
-            ax.set_title(f'P_{i+1}(t) - Max Error: {np.max(abs_err[i,:]):.2e}', fontsize=11)
-            ax.legend(fontsize=8)
-            ax.grid(True, alpha=0.3)
-            ax.set_xlim(left=0)
-            ax.set_ylim(0, max(np.max(y_l1[i, :]), np.max(y_l2[i, :])) * 1.1)
-        
-        # Hide extra subplots
-        for i in range(n_states, len(axes)):
-            axes[i].axis('off')
-        
-        plt.tight_layout()
-        output_file = os.path.join(output_dir, 'L2_individual_comparison.png')
-        plt.savefig(output_file, dpi=300, bbox_inches='tight')
-        plt.close()
-        print(f"Saved individual comparison plot: {output_file}")
 
 
 def compare_solutions(solver_l2, solution_l1_path=None):

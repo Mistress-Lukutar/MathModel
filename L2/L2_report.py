@@ -162,7 +162,6 @@ def main():
     print("  [PNG] L2_analytical_solution.png - Analytical solution plot")
     if comparison_results:
         print("  [PNG] L2_comparison.png - Comparison with L1")
-        print("  [PNG] L2_individual_comparison.png - Per-state comparison")
     print("  [TXT] L2_results.txt - Detailed report with formulas")
     print()
     print("Analytical formulas available in L2_results.txt")

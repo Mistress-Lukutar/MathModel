@@ -59,7 +59,15 @@ class L2ReportGenerator:
         lines.extend(self._generate_operator_method())
         lines.append("")
         
-        # Analytical solution
+        # P-domain solution (Cramer's rule)
+        lines.extend(self._generate_p_domain_solution())
+        lines.append("")
+        
+        # Partial fraction decomposition
+        lines.extend(self._generate_partial_fractions())
+        lines.append("")
+        
+        # Inverse Laplace transform - explicit formulas
         lines.extend(self._generate_analytical_solution())
         lines.append("")
         
@@ -147,55 +155,314 @@ class L2ReportGenerator:
         lines = [
             "2. OPERATOR METHOD (LAPLACE TRANSFORM)",
             "-" * 80,
-            "Applying Laplace transform to the system:",
-            "  L{dP_i/dt} = p·P_i(p) - P_i(0)",
+            "2.1 Applying Laplace transform to the system:",
+            "    L{dP_i/dt} = p·P_i(p) - P_i(0)",
             "",
-            "Operator system: (pI - Q^T)·P(p) = P(0)",
+            "2.2 Operator system: (pI - Q^T)·P(p) = P(0)",
             "",
-            "where:",
-            "  p - complex frequency variable",
-            "  I - identity matrix",
-            "  Q^T - transposed intensity matrix",
-            "  P(p) - vector of Laplace transforms",
-            "  P(0) - initial conditions vector",
+            "    where:",
+            "      p - complex frequency variable",
+            "      I - identity matrix",
+            "      Q^T - transposed intensity matrix",
+            "      P(p) - vector of Laplace transforms",
+            "      P(0) - initial conditions vector",
             "",
-            "Solution in p-domain:",
-            "  P(p) = (pI - Q^T)^(-1) · P(0)",
+            "2.3 Solution in p-domain (matrix form):",
+            "    P(p) = (pI - Q^T)^(-1) · P(0)",
+            "",
+            "    By Cramer's rule for each component:",
+            "    P_i(p) = det(M_i) / det(M)",
+            "",
+            "    where M = (pI - Q^T), M_i is M with i-th column replaced by P₀",
         ]
+        
+        # Add matrix M = (pI - Q^T) with symbolic p
+        lines.extend([
+            "",
+            "    Matrix M = (pI - Q^T):",
+        ])
+        Q_sym = self.solver.Q.T
+        for i in range(self.solver.n_states):
+            row = "    ["
+            for j in range(self.solver.n_states):
+                if i == j:
+                    # Diagonal: p - Q^T[i,i] = p + |q_ii| (since q_ii < 0)
+                    val = -Q_sym[i, j]
+                    row += f" p{val:+7.4f} "
+                else:
+                    # Off-diagonal: -Q^T[i,j]
+                    val = -Q_sym[i, j]
+                    row += f" {val:7.4f} "
+            row += "]"
+            lines.append(row)
+        
+        # Characteristic polynomial
+        poly = self.solver.get_characteristic_polynomial()
+        if poly is not None:
+            lines.extend([
+                "",
+                "2.4 Characteristic polynomial:",
+                "    det(M) = det(pI - Q^T) = (p - λ₁)(p - λ₂)...(p - λₙ)",
+            ])
+            
+            # Format polynomial
+            poly_str = "    det(M) = "
+            terms = []
+            n = len(poly) - 1
+            for i, coef in enumerate(poly):
+                power = n - i
+                if abs(coef) < 1e-10:
+                    continue
+                if power == 0:
+                    term = f"{coef.real:.6f}"
+                elif power == 1:
+                    term = f"{coef.real:.6f}·p"
+                else:
+                    term = f"{coef.real:.6f}·p^{power}"
+                terms.append(term)
+            poly_str += " + ".join(terms).replace("+ -", "- ")
+            lines.append(poly_str)
         
         if self.solver.eigenvalues is not None and len(self.solver.eigenvalues) > 0:
             lines.extend([
                 "",
-                "Characteristic equation roots (eigenvalues of Q):",
+                "    Roots of characteristic equation (poles of Laplace transform):",
             ])
             eigenvalues_list = list(self.solver.eigenvalues)
-            for i, ev in enumerate(eigenvalues_list[:10]):  # Limit output
-                lines.append(f"  λ_{i+1} = {ev}")
-            if len(eigenvalues_list) > 10:
-                lines.append(f"  ... and {len(eigenvalues_list) - 10} more")
+            for i, ev in enumerate(eigenvalues_list):
+                if isinstance(ev, (complex, np.complexfloating)):
+                    if abs(ev.imag) < 1e-10:
+                        lines.append(f"    λ_{i+1} = {ev.real:.6f}")
+                    else:
+                        lines.append(f"    λ_{i+1} = {ev.real:.6f} {ev.imag:+.6f}i")
+                else:
+                    lines.append(f"    λ_{i+1} = {ev:.6f}")
+        
+        return lines
+    
+    def _generate_p_domain_solution(self):
+        """Generate p-domain solution section (4.2 equivalent)."""
+        lines = [
+            "3. SOLUTION IN P-DOMAIN (CRAMER'S RULE)",
+            "-" * 80,
+            "3.1 Explicit formulas for P_i(p):",
+            "",
+            "    Using Cramer's rule for the system (pI - Q^T)·P(p) = P₀:",
+            "    P_i(p) = det(M_i) / det(M)",
+            "",
+            "    where M_i is the matrix M with its i-th column replaced by P₀.",
+            "",
+        ]
+        
+        # Add explicit formulas from Laplace domain
+        p_formulas = self.solver.get_p_domain_formulas()
+        lines.extend(p_formulas)
+        
+        # Add Cramer's rule numerators
+        lines.extend([
+            "",
+            "3.2 Cramer's rule - explicit numerators det(M_i):",
+            "",
+            "    For P_i(p) = det(M_i) / det(M):",
+            "",
+        ])
+        
+        numerators = self.solver.get_numerators_cramer()
+        if numerators is not None:
+            # Get denominator coefficients
+            poly = self.solver.get_characteristic_polynomial()
+            
+            for i, coeffs in enumerate(numerators):
+                degree = len(coeffs) - 1
+                # Format numerator polynomial
+                terms = []
+                for j, coef in enumerate(coeffs):
+                    power = degree - j
+                    if abs(coef) > 1e-8:
+                        sign = "+" if coef >= 0 else "-"
+                        abs_coef = abs(coef)
+                        if power == 0:
+                            term = f"{abs_coef:.4f}"
+                        elif power == 1:
+                            term = f"{abs_coef:.4f}p"
+                        else:
+                            term = f"{abs_coef:.4f}p^{power}"
+                        
+                        if not terms and sign == "+":
+                            terms.append(term)
+                        else:
+                            terms.append(f"{sign} {term}")
+                
+                num_formula = " ".join(terms) if terms else "0"
+                lines.append(f"    det(M_{i+1}) = {num_formula}")
+            
+            # Now add full P_i(p) formulas
+            lines.extend([
+                "",
+                "3.3 Explicit formulas P_i(p) = det(M_i) / det(M):",
+                "",
+            ])
+            
+            # Format denominator once
+            den_terms = []
+            den_degree = len(poly) - 1
+            for j, coef in enumerate(poly):
+                power = den_degree - j
+                if abs(coef) > 1e-8:
+                    sign = "+" if coef >= 0 else "-"
+                    abs_coef = abs(coef)
+                    if power == 0:
+                        term = f"{abs_coef:.4f}"
+                    elif power == 1:
+                        term = f"{abs_coef:.4f}p"
+                    else:
+                        term = f"{abs_coef:.4f}p^{power}"
+                    
+                    if not den_terms and sign == "+":
+                        den_terms.append(term)
+                    else:
+                        den_terms.append(f"{sign} {term}")
+            den_formula = " ".join(den_terms) if den_terms else "0"
+            
+            for i, coeffs in enumerate(numerators):
+                degree = len(coeffs) - 1
+                # Format numerator
+                num_terms = []
+                for j, coef in enumerate(coeffs):
+                    power = degree - j
+                    if abs(coef) > 1e-8:
+                        sign = "+" if coef >= 0 else "-"
+                        abs_coef = abs(coef)
+                        if power == 0:
+                            term = f"{abs_coef:.4f}"
+                        elif power == 1:
+                            term = f"{abs_coef:.4f}p"
+                        else:
+                            term = f"{abs_coef:.4f}p^{power}"
+                        
+                        if not num_terms and sign == "+":
+                            num_terms.append(term)
+                        else:
+                            num_terms.append(f"{sign} {term}")
+                num_formula = " ".join(num_terms) if num_terms else "0"
+                
+                lines.append(f"    P_{i+1}(p) = ({num_formula}) / ({den_formula})")
+        else:
+            lines.append("    [Numerical computation not available]")
+        
+        return lines
+    
+    def _generate_partial_fractions(self):
+        """Generate partial fraction decomposition section (4.3 equivalent)."""
+        lines = [
+            "",
+            "4. PARTIAL FRACTION DECOMPOSITION",
+            "-" * 80,
+            "4.1 Method of undetermined coefficients",
+            "",
+            "    Each P_i(p) is decomposed as:",
+            "    P_i(p) = Σ_{k=1}^n A_{ik} / (p - λ_k)",
+            "",
+            "    Coefficients are found by:",
+            "    A_{ik} = lim_{p→λ_k} [(p - λ_k) · P_i(p)]",
+            "",
+            "    Using spectral decomposition: A_{ik} = c_k · v_{ik}",
+            "    where c = V^(-1)·P₀, v_k are eigenvectors of Q^T",
+            "",
+            "4.2 Coefficient matrix A_{ik}:",
+            "",
+            "    Note: For complex conjugate pairs (λₖ = α ± iβ), coefficients",
+            "    are combined to produce real-valued expressions.",
+        ]
+        
+        # Add coefficient table
+        pf_table = self.solver.get_partial_fraction_table()
+        if pf_table is not None:
+            eigenvalues = pf_table['eigenvalues']
+            n = pf_table['n_states']
+            
+            # Identify real and complex eigenvalue indices
+            real_indices = []
+            complex_pairs = []  # (idx1, idx2) for conjugate pairs
+            
+            processed = set()
+            for k in range(n):
+                if k in processed:
+                    continue
+                if abs(eigenvalues[k].imag) < 1e-10:
+                    real_indices.append(k)
+                else:
+                    # Find conjugate
+                    for m in range(k+1, n):
+                        if abs(eigenvalues[m] - eigenvalues[k].conjugate()) < 1e-10:
+                            complex_pairs.append((k, m))
+                            processed.add(k)
+                            processed.add(m)
+                            break
+            
+            # Header - show real eigenvalues and complex pairs
+            header = "    State    |"
+            for k in real_indices[:5]:  # Limit to first 5 real
+                header += f"   A_{k+1:<2}    |"
+            for idx1, idx2 in complex_pairs[:2]:  # Limit to first 2 complex pairs
+                header += f" Re(A_{idx1+1})| Im(A_{idx1+1})|"
+            lines.append(header)
+            
+            total_cols = len(real_indices[:5]) + 2 * len(complex_pairs[:2])
+            lines.append("    " + "-" * (13 + 12 * total_cols))
+            
+            # Rows - show real coefficients and combined complex
+            for i in range(n):
+                row = f"    P_{i+1}(p)   |"
+                # Real eigenvalues
+                for k in real_indices[:5]:
+                    A = pf_table['coefficients'][i, k]
+                    row += f" {A.real:8.4f} |"
+                # Complex pairs - show real and imag parts
+                for idx1, idx2 in complex_pairs[:2]:
+                    A1 = pf_table['coefficients'][i, idx1]
+                    row += f" {A1.real:8.4f} | {A1.imag:8.4f} |"
+                lines.append(row)
         
         return lines
     
     def _generate_analytical_solution(self):
-        """Generate analytical solution section."""
+        """Generate analytical solution section (4.4 equivalent)."""
         lines = [
-            "3. ANALYTICAL SOLUTION",
+            "",
+            "5. INVERSE LAPLACE TRANSFORM",
             "-" * 80,
-            "Solution P(t) obtained by inverse Laplace transform:",
+            "5.1 Applying inverse transform to each term:",
+            "",
+            "    L⁻¹{A/(p-λ)} = A·e^(λ·t)",
+            "",
+            "5.2 Explicit formulas P_i(t) = Σ_k A_{ik}·e^(λ_k·t):",
             "",
         ]
         
         formulas = self.solver.get_analytical_formulas()
         for formula in formulas:
-            lines.append(formula)
+            lines.append("    " + formula)
             lines.append("")
+        
+        # Verification
+        lines.extend([
+            "5.3 Verification of initial conditions:",
+            "",
+        ])
+        t0_values = self.solver.evaluate(np.array([0]))
+        for i in range(self.solver.n_states):
+            expected = 1.0 if i == np.argmax(self.solver.initial_state) else 0.0
+            actual = t0_values[i, 0]
+            check = "✓" if abs(actual - expected) < 1e-6 else "✗"
+            lines.append(f"    P_{i+1}(0) = {actual:.6f} (expected {expected:.1f}) {check}")
         
         return lines
     
     def _generate_comparison(self):
         """Generate comparison section."""
         lines = [
-            "4. COMPARISON WITH L1 (NUMERICAL SOLUTION)",
+            "6. COMPARISON WITH L1 (NUMERICAL SOLUTION)",
             "-" * 80,
             "Comparing analytical (L2) vs numerical (L1) solutions:",
             "",
@@ -249,7 +516,7 @@ class L2ReportGenerator:
         steady = self.solver.get_steady_state()
         
         lines = [
-            "5. STEADY-STATE SOLUTION (t → ∞)",
+            "7. STEADY-STATE SOLUTION (t → ∞)",
             "-" * 80,
             "Probabilities at equilibrium:",
             "",
