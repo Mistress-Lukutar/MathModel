@@ -138,10 +138,3 @@ Edit `config.json` to customize:
 | `Output/L3_probabilities.png` | Numerical solution vs L2 analytical |
 | `Output/L3_results.txt` | Detailed report with error analysis |
 
-## Authors
-
-- **Mistress-Lukutar** - Initial work
-
-## Version
-
-1.1 (2026-03-16)
