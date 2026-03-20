@@ -39,7 +39,7 @@ This is a **mathematical modeling educational project** consisting of multiple l
 |-----|-------|--------|
 | Lab 1 | Continuous-time Markov Chains | ✅ Implemented |
 | Lab 2 | Operator Method (Laplace Transform) | ✅ Implemented |
-| Lab 3 | [Placeholder] | 🚧 Not implemented |
+| Lab 3 | Numerical Solution (Modified Euler) | ✅ Implemented |
 | Lab 4 | [Placeholder] | 🚧 Not implemented |
 
 ---
@@ -83,7 +83,13 @@ MathModel/
 │   ├── comparison.py         # L2 vs L1 comparison
 │   ├── report_generator.py   # Text report generation
 │   └── L2_report.py          # Main entry point
-├── L3/                       # Lab 3: [Placeholder]
+├── L3/                       # Lab 3: Numerical Solution (Modified Euler)
+│   ├── __init__.py           # Package initialization
+│   ├── modified_euler.py     # Modified Euler method implementation
+│   ├── step_analysis.py      # Convergence analysis with different steps
+│   ├── comparison.py         # L3 vs L2 comparison
+│   ├── report_generator.py   # Text report generation
+│   └── L3_report.py          # Main entry point
 ├── L4/                       # Lab 4: [Placeholder]
 ├── Output/                   # Generated output files (PNG, etc.)
 │   ├── L1_markov_graph.png   # Lab 1 graph output
@@ -180,7 +186,51 @@ All generated files are saved to the `Output/` directory with lab-specific prefi
 
 #### `L2_report.py`
 - **Purpose:** Main entry point for Lab 2
-- **Workflow:** Parse → Solve → Compare → Report
+- **Workflow:** Parse → Solve → Compare → Report → Export for L3
+
+### Lab 3: Numerical Solution (L3/)
+
+**Variant 8: Modified Euler Method (Heun's Method)**
+
+Purpose: Solve the same Kolmogorov equations from L1 using a custom numerical method implementation (without scipy.integrate), and compare with the analytical L2 solution.
+
+#### `modified_euler.py`
+- **Class:** `ModifiedEulerSolver`
+- **Purpose:** Numerical solution using Modified Euler method (predictor-corrector)
+- **Key Methods:**
+  - `f(t, P)` — Right-hand side: dP/dt = P · Q
+  - `step(t, P)` — Single Modified Euler step (k1, k2, update)
+  - `solve()` — Full integration with probability conservation
+  - `evaluate(t_query)` — Interpolate solution at query points
+- **Order of Accuracy:** O(h²) - second order
+
+#### `step_analysis.py`
+- **Class:** `StepConvergenceAnalyzer`
+- **Purpose:** Analyze convergence with different step sizes
+- **Key Methods:**
+  - `run_with_steps(h_values)` — Run solver with multiple step sizes
+  - `compute_errors(reference)` — Compute errors vs analytical solution
+  - `estimate_convergence_order()` — Estimate empirical convergence order
+  - `plot_convergence()` — Visualize convergence
+- **Tested Steps:** h, h/2, h/3, h/4 (typically: 0.04, 0.02, 0.01, 0.005)
+
+#### `comparison.py`
+- **Class:** `L3L2Comparator`
+- **Purpose:** Compare L3 numerical vs L2 analytical solutions
+- **Key Methods:**
+  - `compare()` — Compute absolute and relative errors
+  - `find_max_deviation_interval()` — Find interval of largest error
+  - `plot_comparison()` — Generate comparison plots
+- **Input:** `Output/L2_solution.npy` (exported from L2)
+
+#### `report_generator.py`
+- **Class:** `L3ReportGenerator`
+- **Purpose:** Generate comprehensive report
+- **Sections:** Theory, Input Data, Results, Error Analysis, Convergence, Conclusions
+
+#### `L3_report.py`
+- **Purpose:** Main entry point for Lab 3
+- **Workflow:** Load L1 → Solve L3 → Compare with L2 → Convergence Analysis → Report
 
 ---
 
@@ -230,6 +280,27 @@ python stationary_check.py   # Step 3: Analyze absorption probabilities
 |------|-------------|
 | `Output/L1_markov_graph.png` | State transition diagram |
 | `Output/L1_probabilities.png` | Probability evolution over time |
+| `Output/L1_results.txt` | Full calculation report |
+| `Output/L1_equations.txt` | Exported equations for L2 |
+
+### Expected Outputs (Lab 2)
+
+| File | Description |
+|------|-------------|
+| `Output/L2_analytical_solution.png` | Analytical solution plot |
+| `Output/L2_comparison.png` | Comparison with L1 numerical |
+| `Output/L2_results.txt` | Detailed report with formulas |
+| `Output/L2_solution.npy` | Solution data for L3 comparison |
+| `Output/L2_formulas.txt` | Analytical formulas reference |
+
+### Expected Outputs (Lab 3)
+
+| File | Description |
+|------|-------------|
+| `Output/L3_probabilities.png` | Numerical solution plot |
+| `Output/L3_comparison.png` | Comparison with L2 analytical |
+| `Output/L3_convergence.png` | Convergence analysis plot |
+| `Output/L3_results.txt` | Detailed report with error analysis |
 
 ---
 

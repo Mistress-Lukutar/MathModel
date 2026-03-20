@@ -69,7 +69,7 @@ echo ============================================
 echo.
 echo [1] - Lab 1: Continuous-time Markov Chains
 echo [2] - Lab 2: Operator Method (Laplace Transform)
-echo [3] - Lab 3: [Placeholder]
+echo [3] - Lab 3: Numerical Method (Modified Euler)
 echo [4] - Lab 4: [Placeholder]
 echo.
 echo [Q] - Quit
@@ -194,15 +194,58 @@ cd /d "%~dp0"
 pause
 goto :MENU
 
-REM === Lab 3: Placeholder ===
+REM === Lab 3: Numerical Solution ===
 :LAB3
 echo.
 echo ============================================
-echo  LAB 3: [Placeholder]
+echo  LAB 3: Numerical Solution (Modified Euler)
 echo ============================================
 echo.
-echo This lab is not implemented yet.
+
+REM Check if L1 has been run
+set "L1_EXPORT=%~dp0Output\L1_equations.txt"
+if not exist "%L1_EXPORT%" (
+    echo [WARNING] L1 equations file not found!
+    echo Please run Lab 1 first to generate equations.
+    echo.
+    pause
+    goto :MENU
+)
+
+REM Check if L2 has been run (optional but recommended)
+set "L2_EXPORT=%~dp0Output\L2_solution.npy"
+if not exist "%L2_EXPORT%" (
+    echo [WARNING] L2 analytical solution not found.
+    echo For accurate error analysis, run Lab 2 first.
+    echo.
+    echo Continuing without L2 comparison...
+    echo.
+)
+
+cd /d "%~dp0L3"
+
+echo [Step 1] Loading equations from L1...
+echo [Step 2] Solving using Modified Euler method...
+echo [Step 3] Comparing with L2 analytical solution (if available)...
+echo [Step 4] Running convergence analysis with different step sizes...
+echo [Step 5] Generating report...
 echo.
+
+python L3_report.py
+
+echo.
+echo ============================================
+echo  LAB 3 COMPLETED
+echo ============================================
+echo.
+echo Generated files in Output/:
+echo   [PNG] L3_probabilities.png - Numerical solution plot
+echo   [PNG] L3_comparison.png - Comparison with L2
+echo   [PNG] L3_convergence.png - Convergence analysis
+echo   [TXT] L3_results.txt - Detailed report
+echo.
+
+cd /d "%~dp0"
 pause
 goto :MENU
 

@@ -8,7 +8,7 @@ Mathematical modeling educational project consisting of multiple lab works for a
 |-----|-------|--------|
 | Lab 1 | Continuous-time Markov Chains | ✅ Implemented |
 | Lab 2 | Operator Method (Laplace Transform) | ✅ Implemented |
-| Lab 3 | [Placeholder] | 🚧 Not implemented |
+| Lab 3 | Numerical Solution (Modified Euler) | ✅ Implemented |
 | Lab 4 | [Placeholder] | 🚧 Not implemented |
 
 ## Technology Stack
@@ -36,7 +36,12 @@ MathModel/
 │   ├── comparison.py         # L2 vs L1 comparison
 │   ├── report_generator.py   # Text report generation
 │   └── L2_report.py          # Main entry point
-├── L3/                       # Lab 3: [Placeholder]
+├── L3/                       # Lab 3: Numerical Solution
+│   ├── __init__.py           # Package initialization
+│   ├── modified_euler.py     # Modified Euler method implementation
+│   ├── comparison.py         # L3 vs L2 comparison
+│   ├── report_generator.py   # Text report generation
+│   └── L3_report.py          # Main entry point
 ├── L4/                       # Lab 4: [Placeholder]
 ├── Output/                   # Generated output files (PNG, etc.)
 ├── config.json               # Central configuration for all labs
@@ -104,14 +109,34 @@ Edit `config.json` to customize:
 - Performs partial fraction decomposition for inverse transforms
 - Compares analytical (L2) vs numerical (L1) solutions
 - Generates detailed comparison reports with error metrics
+- Exports solution data for Lab 3 comparison
 
 ### Outputs
 
 | File | Description |
 |------|-------------|
-| `Output/L2_comparison.png` | L1 vs L2 solution comparison plot |
 | `Output/L2_analytical_solution.png` | Analytical solution plot |
-| `Output/L2_comparison_report.txt` | Detailed comparison report |
+| `Output/L2_comparison.png` | L1 vs L2 solution comparison plot |
+| `Output/L2_results.txt` | Detailed report with formulas |
+| `Output/L2_solution.npy` | Solution data for Lab 3 |
+
+## Lab 3: Numerical Solution (Modified Euler Method)
+
+### Features
+
+- Solves Kolmogorov equations using Modified Euler method (predictor-corrector)
+- Custom numerical implementation without scipy.integrate
+- Second-order accuracy O(h²)
+- Compares numerical (L3) vs analytical (L2) solutions
+- Computes absolute and relative errors
+- Finds interval of maximum deviation
+
+### Outputs
+
+| File | Description |
+|------|-------------|
+| `Output/L3_probabilities.png` | Numerical solution vs L2 analytical |
+| `Output/L3_results.txt` | Detailed report with error analysis |
 
 ## Authors
 

@@ -31,6 +31,93 @@ def load_config():
         return json.load(f)
 
 
+def save_for_L3(solver, output_dir=None, t_span=(0, 30), t_points=1000):
+    """
+    Save analytical solution for L3 comparison.
+    
+    Saves a dense grid of points for accurate interpolation by L3.
+    
+    Args:
+        solver (OperatorSolver): Solved solver
+        output_dir (str): Output directory
+        t_span (tuple): Time range
+        t_points (int): Number of points for dense grid
+    """
+    if output_dir is None:
+        output_dir = os.path.join(root_dir, 'Output')
+    os.makedirs(output_dir, exist_ok=True)
+    
+    # Create dense time grid for accurate interpolation
+    t = np.linspace(t_span[0], t_span[1], t_points)
+    y = solver.evaluate(t)
+    
+    # Save solution data
+    solution_data = {
+        't': t,
+        'y': y,
+        'Q': solver.Q,
+        'initial_state': solver.initial_state,
+        'absorbing_states': solver.absorbing_states,
+        'n_states': solver.n_states,
+        'eigenvalues': solver.eigenvalues if hasattr(solver, 'eigenvalues') else None,
+        'method': 'operator_laplace',
+        't_span': t_span,
+        'description': 'Analytical solution via Laplace transform for L3 comparison'
+    }
+    
+    output_file = os.path.join(output_dir, 'L2_solution.npy')
+    np.save(output_file, solution_data)
+    print(f"  Saved L2 solution for L3: {output_file}")
+    print(f"    Grid: {t_points} points from t={t_span[0]} to t={t_span[1]}")
+    print(f"    States: {solver.n_states}")
+    
+    # Also save formulas for reference
+    formulas_file = os.path.join(output_dir, 'L2_formulas.txt')
+    with open(formulas_file, 'w', encoding='utf-8') as f:
+        f.write("=" * 70 + "\n")
+        f.write("L2 ANALYTICAL SOLUTION FORMULAS\n")
+        f.write("For L3 numerical method comparison\n")
+        f.write("=" * 70 + "\n\n")
+        
+        f.write("System: dP/dt = P · Q\n")
+        f.write(f"Number of states: {solver.n_states}\n")
+        f.write(f"Initial state: {solver.initial_state}\n\n")
+        
+        f.write("Matrix Q:\n")
+        for i in range(solver.n_states):
+            row = "  [" + " ".join([f"{solver.Q[i,j]:8.4f}" for j in range(solver.n_states)]) + "]"
+            f.write(row + "\n")
+        f.write("\n")
+        
+        f.write("Analytical Formulas P_i(t):\n")
+        f.write("-" * 70 + "\n")
+        for formula in solver.get_analytical_formulas():
+            f.write(formula + "\n")
+        f.write("\n")
+        
+        if hasattr(solver, 'eigenvalues') and solver.eigenvalues is not None:
+            f.write("Eigenvalues:\n")
+            f.write("-" * 70 + "\n")
+            for i, ev in enumerate(solver.eigenvalues):
+                if hasattr(ev, 'real'):
+                    if abs(ev.imag) < 1e-10:
+                        f.write(f"  λ_{i+1} = {ev.real:.6f}\n")
+                    else:
+                        f.write(f"  λ_{i+1} = {ev.real:.6f} {ev.imag:+.6f}i\n")
+                else:
+                    f.write(f"  λ_{i+1} = {ev}\n")
+            f.write("\n")
+        
+        f.write("=" * 70 + "\n")
+        f.write("Solution grid saved in L2_solution.npy\n")
+        f.write("Use np.load() to access: 't' (times), 'y' (probabilities)\n")
+        f.write("=" * 70 + "\n")
+    
+    print(f"  Saved formulas: {formulas_file}")
+    
+    return solution_data
+
+
 def plot_analytical_solution(solver, t_span=(0, 30), t_points=500, output_dir=None):
     """
     Plot analytical solution.
@@ -92,6 +179,10 @@ def main():
     
     print(f"Loading equations from: {equations_path}")
     
+    # Setup output directory
+    output_dir = os.path.join(root_dir, 'Output')
+    os.makedirs(output_dir, exist_ok=True)
+    
     # Step 1: Parse equations from L1
     print("\n[Step 1] Parsing equations from L1...")
     try:
@@ -120,7 +211,7 @@ def main():
     # Step 3: Plot analytical solution
     print("\n[Step 3] Plotting analytical solution...")
     try:
-        t, y = plot_analytical_solution(solver)
+        t, y = plot_analytical_solution(solver, output_dir=output_dir)
     except Exception as e:
         print(f"WARNING: Plotting failed: {e}")
         t, y = None, None
@@ -154,6 +245,13 @@ def main():
         traceback.print_exc()
         return 1
     
+    # Step 6: Save solution for L3
+    print("\n[Step 6] Saving solution for L3...")
+    try:
+        save_for_L3(solver, output_dir)
+    except Exception as e:
+        print(f"WARNING: Failed to save for L3: {e}")
+    
     # Summary
     print("\n" + "=" * 70)
     print("LAB 2 COMPLETED")
@@ -163,8 +261,11 @@ def main():
     if comparison_results:
         print("  [PNG] L2_comparison.png - Comparison with L1")
     print("  [TXT] L2_results.txt - Detailed report with formulas")
+    print("  [NPY] L2_solution.npy - Solution data for L3")
+    print("  [TXT] L2_formulas.txt - Analytical formulas for L3")
     print()
     print("Analytical formulas available in L2_results.txt")
+    print("Solution exported for L3 numerical method comparison")
     
     return 0
 

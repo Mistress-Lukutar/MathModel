@@ -42,9 +42,24 @@
   },
   
   "L3": {
-    "_comment": "Lab 3: [Placeholder - Not Implemented]",
-    "_description": "Add your Lab 3 configuration here",
-    "enabled": false
+    "_comment": "Lab 3: Numerical Solution of Linear Differential Equations",
+    "_description": "Modified Euler method for solving Kolmogorov equations",
+    "enabled": true,
+    "variant": 8,
+    "method": "Modified Euler",
+    "input": {
+      "source": "L1",
+      "equations_file": "Output/L1_equations.txt"
+    },
+    "reference": {
+      "source": "L2",
+      "solution_file": "Output/L2_solution.npy"
+    },
+    "solver": {
+      "step_size": 0.01,
+      "time_span": [0, 30],
+      "convergence_steps": [0.04, 0.02, 0.01, 0.005]
+    }
   },
   
   "L4": {
