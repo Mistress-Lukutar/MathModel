@@ -40,7 +40,7 @@ This is a **mathematical modeling educational project** consisting of multiple l
 | Lab 1 | Continuous-time Markov Chains | ✅ Implemented |
 | Lab 2 | Operator Method (Laplace Transform) | ✅ Implemented |
 | Lab 3 | Numerical Solution (Modified Euler) | ✅ Implemented |
-| Lab 4 | [Placeholder] | 🚧 Not implemented |
+| Lab 4 | Accuracy Analysis | ✅ Implemented |
 
 ---
 
@@ -90,7 +90,14 @@ MathModel/
 │   ├── comparison.py         # L3 vs L2 comparison
 │   ├── report_generator.py   # Text report generation
 │   └── L3_report.py          # Main entry point
-├── L4/                       # Lab 4: [Placeholder]
+├── L4/                       # Lab 4: Accuracy Analysis
+│   ├── __init__.py           # Package initialization
+│   ├── accuracy_analyzer.py  # Compare numerical vs analytical
+│   ├── convergence_analysis.py # Convergence order estimation
+│   ├── step_comparison.py    # Compare different step sizes
+│   ├── timing_analyzer.py    # Computational time analysis
+│   ├── report_generator.py   # Text report generation
+│   └── L4_report.py          # Main entry point
 ├── Output/                   # Generated output files (PNG, etc.)
 │   ├── L1_markov_graph.png   # Lab 1 graph output
 │   └── L1_probabilities.png  # Lab 1 probabilities plot
@@ -232,6 +239,63 @@ Purpose: Solve the same Kolmogorov equations from L1 using a custom numerical me
 - **Purpose:** Main entry point for Lab 3
 - **Workflow:** Load L1 → Solve L3 → Compare with L2 → Convergence Analysis → Report
 
+### Lab 4: Accuracy Analysis (L4/)
+
+**Variant 8: Modified Euler Method**
+
+Purpose: Comprehensive accuracy analysis of numerical solutions by comparing with analytical solutions from L2. Analyzes convergence order, error metrics, and computational efficiency.
+
+#### `accuracy_analyzer.py`
+- **Class:** `AccuracyAnalyzer`
+- **Purpose:** Compare numerical solution with analytical reference
+- **Key Methods:**
+  - `compute_global_metrics()` — Max/mean abs/rel error, RMSE
+  - `compute_state_metrics()` — Per-state error analysis
+  - `find_max_deviation_interval()` — Find interval of largest error
+  - `get_time_of_max_error()` — Time points of maximum errors
+- **Input:** Numerical solution (L3), Analytical solution (L2)
+
+#### `convergence_analysis.py`
+- **Class:** `ConvergenceAnalyzer`
+- **Class:** `PureModifiedEulerSolver` — Modified Euler WITHOUT normalization/clipping
+- **Purpose:** Analyze convergence with step refinement
+- **Key Methods:**
+  - `run_convergence_study()` — Run solver with multiple step sizes
+  - `analyze_step_groups()` — Compare coarse vs fine steps (demonstrates round-off error)
+  - `estimate_convergence_order()` — Estimate empirical order O(h^p)
+  - `get_convergence_table()` — Format results table
+- **Step Groups:** 
+  - Coarse: [0.5, 0.4, 0.3, 0.2, 0.1] — shows O(h²) convergence
+  - Fine: [0.16, 0.08, 0.04, 0.02, 0.01] — shows round-off error floor
+- **Expected Order:** O(h²) for Modified Euler (for coarse steps)
+- **Note:** Uses `PureModifiedEulerSolver` (no normalization) to avoid O(h) error
+
+#### `step_comparison.py`
+- **Class:** `StepComparator`
+- **Purpose:** Visual comparison of solutions with different steps
+- **Key Methods:**
+  - `plot_error_vs_step(suffix)` — Log-log convergence plot (coarse/fine groups)
+
+#### `timing_analyzer.py`
+- **Class:** `TimingAnalyzer`
+- **Purpose:** Analyze computational time costs
+- **Key Methods:**
+  - `analyze_timing_vs_step()` — Time complexity analysis
+  - `plot_timing_analysis(suffix)` — Generate timing plots (coarse/fine groups)
+  - `compute_efficiency_metrics()` — Accuracy per unit time
+  - `find_optimal_step()` — Find optimal step (accuracy/time tradeoff)
+- **Expected Complexity:** O(1/h) — linear in number of steps
+
+#### `report_generator.py`
+- **Purpose:** Generate comprehensive accuracy report
+- **Sections:** System Info, Error Analysis, Convergence, Timing, Conclusions
+- **Output:** `Output/L4_results.txt`
+
+#### `L4_report.py`
+- **Purpose:** Main entry point for Lab 4
+- **Prerequisites:** L1 (equations) and L2 (analytical solution) must be completed
+- **Workflow:** Load Data → Base Accuracy → Convergence → Timing → Plots → Report
+
 ---
 
 #### `stationary_check.py`
@@ -301,6 +365,17 @@ python stationary_check.py   # Step 3: Analyze absorption probabilities
 | `Output/L3_comparison.png` | Comparison with L2 analytical |
 | `Output/L3_convergence.png` | Convergence analysis plot |
 | `Output/L3_results.txt` | Detailed report with error analysis |
+
+### Expected Outputs (Lab 4)
+
+| File | Description |
+|------|-------------|
+| `Output/L4_convergence_coarse.png` | Convergence plot - coarse steps (shows O(h²)) |
+| `Output/L4_convergence_fine.png` | Convergence plot - fine steps (shows round-off floor) |
+| `Output/L4_accuracy_analysis.png` | Error evolution over time |
+| `Output/L4_timing_coarse.png` | Timing analysis - coarse steps |
+| `Output/L4_timing_fine.png` | Timing analysis - fine steps |
+| `Output/L4_results.txt` | Comprehensive accuracy report |
 
 ---
 

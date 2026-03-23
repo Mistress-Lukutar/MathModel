@@ -58,13 +58,30 @@
     "solver": {
       "step_size": 0.01,
       "time_span": [0, 30],
-      "convergence_steps": [0.04, 0.02, 0.01, 0.005]
+      "convergence_steps": [0.5, 0.4, 0.3, 0.2, 0.1],
+    "fine_steps": [0.16, 0.08, 0.04, 0.02, 0.01]
     }
   },
   
   "L4": {
-    "_comment": "Lab 4: [Placeholder - Not Implemented]",
-    "_description": "Add your Lab 4 configuration here",
-    "enabled": false
+    "_comment": "Lab 4: Accuracy Analysis",
+    "_description": "Analysis of numerical solution accuracy vs analytical",
+    "enabled": true,
+    "variant": 8,
+    "method": "Modified Euler",
+    "input": {
+      "analytical_source": "L2",
+      "analytical_file": "Output/L2_solution.npy",
+      "numerical_source": "L3"
+    },
+    "analysis": {
+      "convergence_steps": [0.5, 0.4, 0.3, 0.2, 0.1],
+      "time_span": [0, 30],
+      "error_metrics": ["absolute", "relative", "rmse"]
+    },
+    "output": {
+      "save_detailed": true,
+      "generate_plots": true
+    }
   }
 }

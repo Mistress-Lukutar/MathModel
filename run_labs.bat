@@ -70,7 +70,7 @@ echo.
 echo [1] - Lab 1: Continuous-time Markov Chains
 echo [2] - Lab 2: Operator Method (Laplace Transform)
 echo [3] - Lab 3: Numerical Method (Modified Euler)
-echo [4] - Lab 4: [Placeholder]
+echo [4] - Lab 4: Accuracy Analysis
 echo.
 echo [Q] - Quit
 echo.
@@ -249,15 +249,62 @@ cd /d "%~dp0"
 pause
 goto :MENU
 
-REM === Lab 4: Placeholder ===
+REM === Lab 4: Accuracy Analysis ===
 :LAB4
 echo.
 echo ============================================
-echo  LAB 4: [Placeholder]
+echo  LAB 4: Accuracy Analysis of Numerical Solutions
 echo ============================================
 echo.
-echo This lab is not implemented yet.
+
+REM Check if L1 has been run
+set "L1_EXPORT=%~dp0Output\L1_equations.txt"
+if not exist "%L1_EXPORT%" (
+    echo [WARNING] L1 equations file not found!
+    echo Please run Lab 1 first to generate equations.
+    echo.
+    pause
+    goto :MENU
+)
+
+REM Check if L2 has been run (required)
+set "L2_EXPORT=%~dp0Output\L2_solution.npy"
+if not exist "%L2_EXPORT%" (
+    echo [ERROR] L2 analytical solution not found!
+    echo Lab 4 requires the analytical solution from Lab 2.
+    echo Please run Lab 2 first.
+    echo.
+    pause
+    goto :MENU
+)
+
+cd /d "%~dp0L4"
+
+echo [Step 1] Loading system data from L1 and L2...
+echo [Step 2] Analyzing accuracy with base step size...
+echo [Step 3] Running convergence analysis with different step sizes...
+echo [Step 4] Analyzing timing characteristics...
+echo [Step 5] Generating comparison plots...
+echo [Step 6] Generating comprehensive report...
 echo.
+
+python L4_report.py
+
+echo.
+echo ============================================
+echo  LAB 4 COMPLETED
+echo ============================================
+echo.
+echo Generated files in Output/:
+echo   [PNG] L4_accuracy_analysis.png - Error evolution analysis
+echo   [PNG] L4_convergence.png - Convergence plot (log-log)
+echo   [PNG] L4_step_comparison.png - Solution comparison
+echo   [PNG] L4_error_evolution.png - Error evolution over time
+echo   [PNG] L4_timing.png - Timing analysis
+echo   [TXT] L4_results.txt - Comprehensive accuracy report
+echo.
+
+cd /d "%~dp0"
 pause
 goto :MENU
 

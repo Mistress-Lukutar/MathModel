@@ -9,7 +9,7 @@ Mathematical modeling educational project consisting of multiple lab works for a
 | Lab 1 | Continuous-time Markov Chains | ✅ Implemented |
 | Lab 2 | Operator Method (Laplace Transform) | ✅ Implemented |
 | Lab 3 | Numerical Solution (Modified Euler) | ✅ Implemented |
-| Lab 4 | [Placeholder] | 🚧 Not implemented |
+| Lab 4 | Accuracy Analysis of Numerical Solutions | ✅ Implemented |
 
 ## Technology Stack
 
@@ -42,7 +42,14 @@ MathModel/
 │   ├── comparison.py         # L3 vs L2 comparison
 │   ├── report_generator.py   # Text report generation
 │   └── L3_report.py          # Main entry point
-├── L4/                       # Lab 4: [Placeholder]
+├── L4/                       # Lab 4: Accuracy Analysis
+│   ├── __init__.py           # Package initialization
+│   ├── accuracy_analyzer.py  # Error metrics analysis
+│   ├── convergence_analysis.py # Convergence order estimation
+│   ├── step_comparison.py    # Step size comparison plots
+│   ├── timing_analyzer.py    # Computational time analysis
+│   ├── report_generator.py   # Text report generation
+│   └── L4_report.py          # Main entry point
 ├── Output/                   # Generated output files (PNG, etc.)
 ├── config.json               # Central configuration for all labs
 ├── requirements.txt          # Python dependencies
@@ -138,3 +145,38 @@ Edit `config.json` to customize:
 | `Output/L3_probabilities.png` | Numerical solution vs L2 analytical |
 | `Output/L3_results.txt` | Detailed report with error analysis |
 
+
+## Lab 4: Accuracy Analysis of Numerical Solutions
+
+### Features
+
+- Comprehensive accuracy analysis of Modified Euler method
+- Two-group convergence study (coarse vs fine steps)
+- Demonstrates round-off error floor phenomenon
+- Computes absolute and relative errors vs analytical (L2) solution
+- Estimates empirical convergence order using linear regression
+- Analyzes computational time complexity
+- Uses PureModifiedEulerSolver (without normalization) for clean convergence analysis
+
+### Convergence Study
+
+**Group 1 (Coarse steps):** [0.5, 0.4, 0.3, 0.2, 0.1]
+- Truncation error dominates
+- Expected order: O(h²)
+- Result: Confirms theoretical second-order convergence
+
+**Group 2 (Fine steps):** [0.16, 0.08, 0.04, 0.02, 0.01]
+- Round-off error affects convergence
+- Expected order: < 2.0
+- Result: Demonstrates machine precision limitations
+
+### Outputs
+
+| File | Description |
+|------|-------------|
+| `Output/L4_convergence_coarse.png` | Convergence plot for coarse steps (shows O(h²)) |
+| `Output/L4_convergence_fine.png` | Convergence plot for fine steps (shows round-off floor) |
+| `Output/L4_accuracy_analysis.png` | Error evolution over time (h = 0.01) |
+| `Output/L4_timing_coarse.png` | Timing analysis for coarse steps |
+| `Output/L4_timing_fine.png` | Timing analysis for fine steps |
+| `Output/L4_results.txt` | Comprehensive accuracy report |
