@@ -18,7 +18,9 @@ Mathematical modeling educational project consisting of multiple lab works for a
 - **ODE Solver:** SciPy (`scipy.integrate.solve_ivp`)
 - **Linear Algebra:** SciPy (`scipy.linalg`)
 - **Visualization:** Matplotlib
-- **Graph Visualization:** NetworkX, Graphviz (neato)
+- **Graph Visualization:** NetworkX
+- **Symbolic Math:** SymPy (for L2 analytical solution)
+- **Optional:** Graphviz (neato) - only for L1 state diagram
 
 ## Project Structure
 
@@ -106,6 +108,8 @@ Edit `config.json` to customize:
 | `Output/L1_markov_graph.png` | State transition diagram |
 | `Output/L1_probabilities.png` | Probability evolution plot |
 | `Output/L1_results.txt` | Full calculation report |
+| `Output/L1_equations.txt` | Exported equations for L2/L3 |
+| `Output/L1_solution.npy` | Solution data for L2 comparison |
 
 ## Lab 2: Operator Method
 
@@ -125,6 +129,7 @@ Edit `config.json` to customize:
 | `Output/L2_analytical_solution.png` | Analytical solution plot |
 | `Output/L2_comparison.png` | L1 vs L2 solution comparison plot |
 | `Output/L2_results.txt` | Detailed report with formulas |
+| `Output/L2_formulas.txt` | Analytical formulas reference |
 | `Output/L2_solution.npy` | Solution data for Lab 3 |
 
 ## Lab 3: Numerical Solution (Modified Euler Method)
@@ -142,7 +147,7 @@ Edit `config.json` to customize:
 
 | File | Description |
 |------|-------------|
-| `Output/L3_probabilities.png` | Numerical solution vs L2 analytical |
+| `Output/L3_probabilities.png` | Numerical solution with L2 comparison |
 | `Output/L3_results.txt` | Detailed report with error analysis |
 
 
