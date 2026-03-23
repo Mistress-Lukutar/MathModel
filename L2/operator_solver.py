@@ -12,9 +12,6 @@ import numpy as np
 import sympy as sp
 from sympy import symbols, Matrix, eye, simplify, apart, exp
 
-from .numerical_inverse_laplace import NumericalLaplaceSolver
-
-
 class OperatorSolver:
     """
     Solver for linear ODE systems using Laplace transform (operator method).

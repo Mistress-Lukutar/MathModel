@@ -144,16 +144,18 @@ def generate_report(accuracy_metrics: Dict,
     if convergence_order is not None:
         lines.append(f"Overall estimated order (regression): O(h^{convergence_order:.2f})")
         
-        # Check if we have region-specific data
-        if hasattr(convergence_results, '_early_order') and hasattr(convergence_results, '_late_order'):
-            early = convergence_results._early_order
-            late = convergence_results._late_order
-            lines.append(f"  Early region (large h): O(h^{early:.2f})")
-            lines.append(f"  Late region (small h):  O(h^{late:.2f})")
+        # Check if we have two-group analysis data for region-specific info
+        if group_results is not None and 'coarse' in group_results and 'fine' in group_results:
+            coarse_order = group_results['coarse'].get('order')
+            fine_order = group_results['fine'].get('order')
+            if coarse_order is not None:
+                lines.append(f"  Coarse steps (large h): O(h^{coarse_order:.2f})")
+            if fine_order is not None:
+                lines.append(f"  Fine steps (small h):   O(h^{fine_order:.2f})")
             lines.append("")
             lines.append("  Interpretation:")
-            lines.append("  - Early region: Large step sizes, truncation error dominates")
-            lines.append("  - Late region: Small step sizes, round-off error may affect estimate")
+            lines.append("  - Coarse steps: Large step sizes, truncation error dominates")
+            lines.append("  - Fine steps: Small step sizes, round-off error may affect estimate")
         
         lines.append("")
         
@@ -320,6 +322,23 @@ def generate_report(accuracy_metrics: Dict,
     lines.append("   - For high precision: use h = 0.005 (error ~ 10⁻⁶, longer execution)")
     lines.append("   - Step sizes smaller than 0.005 provide diminishing returns due to")
     lines.append("     accumulated round-off errors and increased computation time.")
+    
+    lines.append("")
+    lines.append("7. GENERATED FILES")
+    lines.append("-" * 80)
+    lines.append("")
+    lines.append("The following files were generated in the Output/ directory:")
+    lines.append("")
+    lines.append("Plots:")
+    lines.append("  - L4_convergence_coarse.png : Convergence analysis (coarse steps)")
+    lines.append("  - L4_convergence_fine.png   : Convergence analysis (fine steps)")
+    lines.append("  - L4_accuracy_analysis.png  : Error evolution over time")
+    lines.append("  - L4_timing_coarse.png      : Timing analysis (coarse steps)")
+    lines.append("  - L4_timing_fine.png        : Timing analysis (fine steps)")
+    lines.append("")
+    lines.append("Reports:")
+    lines.append("  - L4_results.txt            : This comprehensive report")
+    lines.append("")
     
     lines.append("")
     lines.append("=" * 80)

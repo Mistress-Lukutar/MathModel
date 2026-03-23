@@ -298,14 +298,28 @@ class L3ReportGenerator:
         """Generate report footer."""
         lines = [
             "=" * 80,
-            "END OF REPORT",
+            "7. GENERATED FILES",
             "=" * 80,
             "",
-            "Generated files:",
-            "  - L3_results.txt: This report",
-            "  - L3_probabilities.png: Probability evolution plot",
+            "The following files were generated in the Output/ directory:",
             "",
+            "Plots:",
+            "  - L3_probabilities.png      : Numerical solution with L2 comparison",
         ]
+        
+        # Add comparison plot only if L2 was available
+        if self.comparison_results:
+            lines.append("  - L3_comparison.png         : Detailed error analysis plots")
+        
+        lines.extend([
+            "",
+            "Reports:",
+            "  - L3_results.txt            : This detailed report",
+            "",
+            "=" * 80,
+            "END OF REPORT",
+            "=" * 80,
+        ])
         return "\n".join(lines)
 
 

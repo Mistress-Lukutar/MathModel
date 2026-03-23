@@ -296,11 +296,11 @@ echo  LAB 4 COMPLETED
 echo ============================================
 echo.
 echo Generated files in Output/:
+echo   [PNG] L4_convergence_coarse.png - Convergence plot (coarse steps)
+echo   [PNG] L4_convergence_fine.png - Convergence plot (fine steps)
 echo   [PNG] L4_accuracy_analysis.png - Error evolution analysis
-echo   [PNG] L4_convergence.png - Convergence plot (log-log)
-echo   [PNG] L4_step_comparison.png - Solution comparison
-echo   [PNG] L4_error_evolution.png - Error evolution over time
-echo   [PNG] L4_timing.png - Timing analysis
+echo   [PNG] L4_timing_coarse.png - Timing analysis (coarse steps)
+echo   [PNG] L4_timing_fine.png - Timing analysis (fine steps)
 echo   [TXT] L4_results.txt - Comprehensive accuracy report
 echo.
 

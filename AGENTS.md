@@ -86,7 +86,6 @@ MathModel/
 ├── L3/                       # Lab 3: Numerical Solution (Modified Euler)
 │   ├── __init__.py           # Package initialization
 │   ├── modified_euler.py     # Modified Euler method implementation
-│   ├── step_analysis.py      # Convergence analysis with different steps
 │   ├── comparison.py         # L3 vs L2 comparison
 │   ├── report_generator.py   # Text report generation
 │   └── L3_report.py          # Main entry point

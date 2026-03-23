@@ -24,7 +24,6 @@ from .equation_parser import EquationParser, load_from_L1
 from .operator_solver import OperatorSolver, solve_from_L1
 from .comparison import L2L1Comparator, compare_solutions
 from .report_generator import L2ReportGenerator, generate_report
-from .numerical_inverse_laplace import NumericalLaplaceSolver
 
 __all__ = [
     'EquationParser',
@@ -35,7 +34,6 @@ __all__ = [
     'compare_solutions',
     'L2ReportGenerator',
     'generate_report',
-    'NumericalLaplaceSolver',
 ]
 
 __version__ = '1.0'
